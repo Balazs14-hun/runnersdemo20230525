@@ -47,6 +47,14 @@ public class RunnerRestController {
         return runnerRepository.findAll();
     }
 
+    @GetMapping("tallestrunner")
+    public String getTallestRunnerName() {
+        RunnerService runnerService = new RunnerService(runnerRepository);
+        RunnerEntity tallestRunner = runnerService.getTallestRunner();
+
+        return tallestRunner.getRunnerName();
+    }
+
     @PostMapping("/{id}/addlaptime")
     public ResponseEntity addLaptime(@PathVariable Long id, @RequestBody LapTimeRequest lapTimeRequest) {
         RunnerEntity runner = runnerRepository.findById(id).orElse(null);
@@ -61,6 +69,7 @@ public class RunnerRestController {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Runner with ID " + id + " not found");
         }
     }
+
     public static class LapTimeRequest {
         private int lapTimeSeconds;
 

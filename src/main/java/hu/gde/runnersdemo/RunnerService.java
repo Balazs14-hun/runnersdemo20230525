@@ -28,4 +28,25 @@ public class RunnerService {
             return -1.0;
         }
     }
+
+    public List<RunnerEntity> getAllRunners() {
+        return runnerRepository.findAll();
+    }
+
+    public RunnerEntity getTallestRunner(){
+        List<RunnerEntity> allRunners = getAllRunners();
+        RunnerEntity tallestRunner = allRunners.get(0);
+        boolean isFirstElement = true;
+
+        for (RunnerEntity runner : allRunners) {
+            if(isFirstElement){
+                isFirstElement = false;
+                continue;
+            }
+            if(runner.getHeight() > tallestRunner.getHeight()){
+                tallestRunner = runner;
+            }
+        }
+        return tallestRunner;
+    }
 }
