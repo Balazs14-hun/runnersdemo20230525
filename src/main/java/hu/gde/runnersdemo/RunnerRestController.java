@@ -14,11 +14,13 @@ public class RunnerRestController {
     @Autowired
     private LapTimeRepository lapTimeRepository;
     private RunnerRepository runnerRepository;
+    private SponsorRepository sponsorRepository;
 
     @Autowired
-    public RunnerRestController(RunnerRepository runnerRepository, LapTimeRepository lapTimeRepository) {
+    public RunnerRestController(RunnerRepository runnerRepository, LapTimeRepository lapTimeRepository, SponsorRepository sponsorRepository) {
         this.runnerRepository = runnerRepository;
         this.lapTimeRepository = lapTimeRepository;
+        this.sponsorRepository = sponsorRepository;
     }
 
     @GetMapping("/{id}")
@@ -70,6 +72,23 @@ public class RunnerRestController {
         }
     }
 
+    @PostMapping("/{id}/changesponsor")
+    public ResponseEntity changeSponsor(@PathVariable Long id, @RequestBody SponsorRequest sponsorRequest) {
+        RunnerEntity runner = runnerRepository.findById(id).orElse(null);
+        if (runner != null) {
+            SponsorEntity oldSponsor = sponsorRepository.findById(runner.getSponsorId()).orElse(null);
+            oldSponsor.getRunners().remove(runner);
+            SponsorEntity newSponsor = sponsorRepository.findById(sponsorRequest.getSponsorId()).orElse(null);
+            newSponsor.getRunners().add(runner);
+            runner.setSponsor(newSponsor);
+
+            runnerRepository.save(runner);
+            return ResponseEntity.ok().build();
+        } else {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Runner with ID " + id + " not found");
+        }
+    }
+
     public static class LapTimeRequest {
         private int lapTimeSeconds;
 
@@ -79,6 +98,18 @@ public class RunnerRestController {
 
         public void setLapTimeSeconds(int lapTimeSeconds) {
             this.lapTimeSeconds = lapTimeSeconds;
+        }
+    }
+
+    public static class SponsorRequest {
+        private long sponsorId;
+
+        public long getSponsorId() {
+            return sponsorId;
+        }
+
+        public void setSponsorId(long sponsorId) {
+            this.sponsorId = sponsorId;
         }
     }
 }
