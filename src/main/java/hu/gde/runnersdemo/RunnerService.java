@@ -33,20 +33,32 @@ public class RunnerService {
         return runnerRepository.findAll();
     }
 
-    public RunnerEntity getTallestRunner(){
+    public RunnerEntity getTallestRunner() {
         List<RunnerEntity> allRunners = getAllRunners();
         RunnerEntity tallestRunner = allRunners.get(0);
         boolean isFirstElement = true;
 
         for (RunnerEntity runner : allRunners) {
-            if(isFirstElement){
+            if (isFirstElement) {
                 isFirstElement = false;
                 continue;
             }
-            if(runner.getHeight() > tallestRunner.getHeight()){
+            if (runner.getHeight() > tallestRunner.getHeight()) {
                 tallestRunner = runner;
             }
         }
         return tallestRunner;
+    }
+
+    public double getAverageRunnerHeight() {
+        List<RunnerEntity> allRunners = getAllRunners();
+        double runnerHeightSum = 0;
+
+        for (RunnerEntity runner : allRunners) {
+            runnerHeightSum += runner.getHeight();
+        }
+        double averageRunnerHeight = runnerHeightSum / allRunners.size();
+
+        return averageRunnerHeight;
     }
 }
